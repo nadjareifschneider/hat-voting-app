@@ -2,21 +2,50 @@
 <html>
 <head>
   <meta charset="UTF-8" />
-  <title>Hat voting app</title>
+  <title>Personenverwaltung</title>
   <style>
-    body { font-family: sans-serif; max-width: 600px; margin: 40px auto; }
-    .person { display: flex; justify-content: space-between; margin: 10px 0; }
-    input { width: 50px; }
+    body {
+      font-family: sans-serif;
+      max-width: 600px;
+      margin: 40px auto;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    #person-list {
+      margin-top: 20px;
+    }
+    .person {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+    #new-person {
+      margin-top: 30px;
+      display: flex;
+      gap: 10px;
+    }
+    input[type="text"] {
+      flex: 1;
+      padding: 8px;
+      font-size: 16px;
+    }
+    button {
+      padding: 8px 14px;
+      font-size: 16px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
 
-  <h1>Voting</h1>
-  <p>Du hast insgesamt <strong>5 Stimmen</strong>. Verteile sie auf beliebige Personen.</p>
+  <h1>Personen</h1>
 
-  <div id="persons"></div>
+  <div id="person-list"></div>
 
-  <p id="remaining"></p>
+  <div id="new-person">
+    <input id="person-name" type="text" placeholder="Neue Person eingeben…" />
+    <button id="add-btn">Hinzufügen</button>
+  </div>
 
   <script type="module">
     import { createClient } from 'https://esm.sh/@supabase/supabase-js'
@@ -26,76 +55,66 @@
       'sb_publishable_22vd4SJ51OkyVTSSGKIl9A_8ECO4VpG'
     )
 
-    // 1) Anonymous Auth
+    // -----------------------------
+
+    // 1) Anonymous Auth sicherstellen
+    // -----------------------------
     const { data: session } = await supabase.auth.getSession()
     if (!session.session) {
       await supabase.auth.signInAnonymously()
     }
-    const { data: userData } = await supabase.auth.getUser()
-    const user = userData.user
 
-    console.log(user);
+    // -----------------------------
+    // 2) Personen laden
+    // -----------------------------
+    async function loadPersons() {
+      const list = document.getElementById('person-list')
+      list.innerHTML = 'Lade Personen…'
 
-    // Load everything
-    load()
+      const { data, error } = await supabase
+        .from('persons')
+        .select('*')
+        .order('name', { ascending: true })
 
-    async function load() {
-      const { data: persons, error } = await supabase
-        .from('person')
-        .select('id, name');
+      if (error) {
+        list.innerHTML = 'Fehler beim Laden.'
+        console.error(error)
+        return
+      }
 
-      console.log({ persons, error });
-
-      
-      console.log(persons)
-
-      const { data: myVotes } = await supabase
-        .from('vote')
-        .select('person_id')
-
-      console.log(myVotes)
-
-      const remaining = 5
-      document.getElementById('remaining').innerText =
-        `Verbleibende Stimmen: ${remaining}`
-
-      const container = document.getElementById('person')
-      container.innerHTML = ''
-
-      persons.forEach(p => {
+      list.innerHTML = ''
+      data.forEach(person => {
         const div = document.createElement('div')
         div.className = 'person'
-
-        div.innerHTML = `
-          <span>${p.name}</span>
-        `
-
-        const input = div.querySelector('input')
-        input.addEventListener('change', () => updateVote(p.id, input.value))
-
-        container.appendChild(div)
+        div.textContent = person.name
+        list.appendChild(div)
       })
     }
 
-    async function updateVote(personId, amount) {
-      amount = parseInt(amount)
+    loadPersons()
+
+    // -----------------------------
+    // 3) Neue Person hinzufügen
+    // -----------------------------
+    document.getElementById('add-btn').addEventListener('click', async () => {
+      const nameInput = document.getElementById('person-name')
+      const name = nameInput.value.trim()
+
+      if (!name) return
 
       const { error } = await supabase
-        .from('votes')
-        .upsert({
-          voter_id: user.id,
-          person_id: personId,
-          amount: amount
-        })
+        .from('persons')
+        .insert({ name })
 
       if (error) {
-        alert(error.message)
+        alert('Fehler: ' + error.message)
+        return
       }
 
-      load()
-    }
+      nameInput.value = ''
+      loadPersons()
+    })
   </script>
 
 </body>
 </html>
-
