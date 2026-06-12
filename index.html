@@ -1,10 +1,100 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>Hat Voting App</title>
-  </head>
-  <body>
-    <h1>Hat voting app test</h1>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <title>Hat voting app</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: 40px auto; }
+    .person { display: flex; justify-content: space-between; margin: 10px 0; }
+    input { width: 50px; }
+  </style>
+</head>
+<body>
+
+  <h1>Voting</h1>
+  <p>Du hast insgesamt <strong>5 Stimmen</strong>. Verteile sie auf beliebige Personen.</p>
+
+  <div id="persons"></div>
+
+  <p id="remaining"></p>
+
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js'
+
+    const supabase = createClient(
+      'https://encergwbfwrbirypfczq.supabase.co',
+      'sb_publishable_22vd4SJ51OkyVTSSGKIl9A_8ECO4VpG'
+    )
+
+    // 1) Anonymous Auth
+    const { data: session } = await supabase.auth.getSession()
+    if (!session.session) {
+      await supabase.auth.signInAnonymously()
+    }
+    const { data: userData } = await supabase.auth.getUser()
+    const user = userData.user
+
+    // Load everything
+    load()
+
+    async function load() {
+      const { data: persons } = await supabase
+        .from('person')
+        .select('id, name')
+
+      const { data: myVotes } = await supabase
+        .from('votes')
+        .select('person_id, amount')
+
+      const voteMap = {}
+      let used = 0
+      myVotes?.forEach(v => {
+        voteMap[v.person_id] = v.amount
+        used += v.amount
+      })
+
+      const remaining = 5 - used
+      document.getElementById('remaining').innerText =
+        `Verbleibende Stimmen: ${remaining}`
+
+      const container = document.getElementById('person')
+      container.innerHTML = ''
+
+      persons.forEach(p => {
+        const div = document.createElement('div')
+        div.className = 'person'
+
+        div.innerHTML = `
+          <span>${p.name}</span>
+          <input type="number" min="0" max="5" value="${voteMap[p.id] || 0}" />
+        `
+
+        const input = div.querySelector('input')
+        input.addEventListener('change', () => updateVote(p.id, input.value))
+
+        container.appendChild(div)
+      })
+    }
+
+    async function updateVote(personId, amount) {
+      amount = parseInt(amount)
+
+      const { error } = await supabase
+        .from('votes')
+        .upsert({
+          voter_id: user.id,
+          person_id: personId,
+          amount: amount
+        })
+
+      if (error) {
+        alert(error.message)
+      }
+
+      load()
+    }
+  </script>
+
+</body>
 </html>
+
