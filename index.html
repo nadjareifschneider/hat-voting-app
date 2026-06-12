@@ -47,7 +47,7 @@
       console.log(persons)
 
       const { data: myVotes } = await supabase
-        .from('votes')
+        .from('vote')
         .select('person_id, amount')
 
       const voteMap = {}
