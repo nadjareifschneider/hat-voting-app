@@ -72,7 +72,7 @@
       list.innerHTML = 'Lade Personen…'
 
       const { data, error } = await supabase
-        .from('persons')
+        .from('person')
         .select('*')
         .order('name', { ascending: true })
 
@@ -103,7 +103,7 @@
       if (!name) return
 
       const { error } = await supabase
-        .from('persons')
+        .from('person')
         .insert({ name })
 
       if (error) {
