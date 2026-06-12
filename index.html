@@ -40,10 +40,13 @@
     load()
 
     async function load() {
-      const { data: persons } = await supabase
+      const { data: persons, error } = await supabase
         .from('person')
-        .select('id, name')
+        .select('id, name');
 
+      console.log({ persons, error });
+
+      
       console.log(persons)
 
       const { data: myVotes } = await supabase
