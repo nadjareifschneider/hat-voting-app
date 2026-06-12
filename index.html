@@ -34,6 +34,8 @@
     const { data: userData } = await supabase.auth.getUser()
     const user = userData.user
 
+    console.log(user);
+
     // Load everything
     load()
 
@@ -41,6 +43,8 @@
       const { data: persons } = await supabase
         .from('person')
         .select('id, name')
+
+      console.log(persons)
 
       const { data: myVotes } = await supabase
         .from('votes')
