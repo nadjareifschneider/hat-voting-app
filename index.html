@@ -315,32 +315,33 @@
     // Bild hochladen
     // -----------------------------
     async function uploadImage(personId, file) {
+    
+      // 1) Bild verkleinern
       file = await resizeImage(file, 1024, 0.8)
-      
-      const fileExt = file.name.split('.').pop()
-      const fileName = `${personId}.${fileExt}`
+    
+      const fileName = `${personId}.jpg`
       const filePath = `person-images/${fileName}`
-
+    
       const { error: uploadError } = await supabase.storage
         .from('person-images')
         .upload(filePath, file, { upsert: true })
-
+    
       if (uploadError) {
         alert('Upload fehlgeschlagen.')
         return
       }
-
+    
       const { data: publicUrlData } = supabase.storage
         .from('person-images')
-        .getPublicUrl('person-images/' + filePath)
-
+        .getPublicUrl(filePath)
+    
       const publicUrl = publicUrlData.publicUrl
-
+    
       await supabase
         .from('person')
         .update({ image_url: publicUrl })
         .eq('id', personId)
-
+    
       // Bild sofort aktualisieren
       const img = document.querySelector(`img[data-img-id="${personId}"]`)
       if (img) {
