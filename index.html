@@ -216,7 +216,7 @@
           </div>
 
           <img 
-            src="${person.image_url ? person.image_url + '?t=' + Date.now() : ''}" 
+            src="${person.image_url}" 
             data-img-id="${person.id}"
           >
 
@@ -228,7 +228,7 @@
 
         const img = document.querySelector(`img[data-img-id="${person.id}"]`)
         if (img) {
-          img.src = publicUrl + `?t=${Date.now()}`
+          img.src = person.image_url
         }
       })
 
