@@ -209,10 +209,12 @@
     const id = btn.dataset.id
     const fileInput = document.querySelector(`.upload-input[data-id="${id}"]`)
     const file = fileInput.files[0]
+    console.log(file)
     if (!file) {
       alert('Bitte ein Bild auswählen.')
       return
     }
+    console.log('upload image')
     await uploadImage(id, file)
   })
 })
