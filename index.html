@@ -366,18 +366,6 @@
         .update({ image_url: publicUrl })
         .eq('id', personId)
         .select()
-
-      //TEST UPDATE
-      const test = await supabase
-        .from('person')
-        .select('*')
-        .eq('id', personId);
-      console.log("Kann ich die Zeile sehen?", test);
-      await supabase
-        .from('person')
-        .update({ name: "TEST" })
-        .eq('id', personId)
-        .select();
     
       if (updateError) {
         console.error("❌ DB-Update-Fehler:", updateError)
