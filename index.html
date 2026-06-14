@@ -225,6 +225,11 @@
         `
 
         list.appendChild(div)
+
+        const img = document.querySelector(`img[data-img-id="${person.id}"]`)
+        if (img) {
+          img.src = publicUrl + `?t=${Date.now()}`
+        }
       })
 
       // Vote Buttons
