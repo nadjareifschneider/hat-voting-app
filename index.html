@@ -4,75 +4,107 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Annas & Nadjas Hutvoting</title>
+
   <style>
     body {
       font-family: sans-serif;
       max-width: 600px;
       margin: 40px auto;
     }
-    h1 {
+
+    h2 {
+      margin-bottom: 10px;
+    }
+
+    /* Person Card */
+    .person {
+      background: #fafafa;
+      border-radius: 12px;
+      border: 1px solid #ddd;
+      padding: 20px;
       margin-bottom: 20px;
     }
-    #person-list {
-      margin-top: 20px;
+
+    .person-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
     }
-.person {
-  background: #fafafa;
-  border-radius: 8px;
-  margin-bottom: 12px;
-  border: 1px solid #eee;
-}
+
+    .person-name {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    .person img {
+      width: 120px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+
+    /* Buttons */
+    .vote-btn {
+      padding: 6px 14px;
+      border-radius: 6px;
+      border: none;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .vote {
+      background: #2ecc71; /* Grün */
+    }
+
+    .unvote {
+      background: #e74c3c; /* Rot */
+    }
+
+    .upload-btn {
+      margin-top: 8px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: none;
+      background: #3498db;
+      color: white;
+      cursor: pointer;
+    }
+
+    /* New Person Form */
     #new-person {
       margin-top: 30px;
       display: flex;
       gap: 10px;
     }
+
     input[type="text"] {
       flex: 1;
       padding: 8px;
       font-size: 16px;
     }
+
     button {
-      padding: 8px 14px;
-      font-size: 16px;
       cursor: pointer;
     }
 
-    /* Mobile-Optimierung */
-@media (max-width: 600px) {
-  body {
-    margin: 20px;
-    padding: 0 4px;
-  }
+    /* Mobile */
+    @media (max-width: 600px) {
+      body {
+        margin: 20px;
+      }
 
-  h1 {
-    font-size: 1.6rem;
-    text-align: center;
-  }
+      #new-person {
+        flex-direction: column;
+      }
 
-  #new-person {
-    flex-direction: column;
-  }
-
-  input[type="text"] {
-    width: 100%;
-    font-size: 18px;
-  }
-
-  button {
-    width: 100%;
-    font-size: 18px;
-    padding: 12px;
-  }
-.person {
-  background: #fafafa;
-  border-radius: 8px;
-  margin-bottom: 12px;
-  border: 1px solid #eee;
-}
-}
+      button {
+        width: 100%;
+      }
+    }
   </style>
 </head>
+
 <body>
 
   <h2>Annas & Nadjas Hutvoting</h2>
@@ -94,8 +126,7 @@
     )
 
     // -----------------------------
-
-    // 1) Anonymous Auth sicherstellen
+    // Auth sicherstellen
     // -----------------------------
     const { data: session } = await supabase.auth.getSession()
     if (!session.session) {
@@ -103,129 +134,123 @@
     }
 
     // -----------------------------
-    // 2) Personen und Votes laden
+    // Personen laden
     // -----------------------------
     async function loadPersons() {
       const list = document.getElementById('person-list')
       list.innerHTML = 'Lade Personen…'
-    
+
       const user = (await supabase.auth.getUser()).data.user
-    
-      // Personen + Votes laden
-      const { data: persons, error } = await supabase
+
+      const { data: persons } = await supabase
         .from('person')
         .select(`
           id,
           name,
+          image_url,
           vote:vote(person_id, voter_id)
         `)
         .order('name', { ascending: true })
-    
-      if (error) {
-        list.innerHTML = 'Fehler beim Laden.'
-        console.error(error)
-        return
-      }
-    
-      // Votes des Users laden
+
       const { data: myVotes } = await supabase
         .from('vote')
         .select('*')
         .eq('voter_id', user.id)
-    
+
       list.innerHTML = ''
-    
+
       persons.forEach(person => {
+        const hasVoted = myVotes.some(v => v.person_id === person.id)
+        const voteCount = person.vote.length
+
         const div = document.createElement('div')
         div.className = 'person'
-    
-        const voteCount = person.vote.length
-        const hasVoted = myVotes.some(v => v.person_id === person.id)
-    
+
         div.innerHTML = `
-          <strong>${person.name}</strong><br>
-           <img 
-    src="${person.image_url ?? ''}" 
-    data-img-id="${person.id}" 
-    style="max-width:120px; margin:6px 0;"
-  ><br>
-          Votes: ${voteCount}<br>
-          <button data-id="${person.id}" class="vote-btn">
-            ${hasVoted ? 'Unvote' : 'Vote'}
-          </button>
-          <input type="file" data-id="${person.id}" class="upload-input" accept="image/*" style="margin-top:6px;">
+          <div class="person-header">
+            <div class="person-name">${person.name}</div>
+            <button 
+              data-id="${person.id}" 
+              class="vote-btn ${hasVoted ? 'unvote' : 'vote'}"
+            >
+              ${hasVoted ? 'Unvote' : 'Vote'}
+            </button>
+          </div>
+
+          <img 
+            src="${person.image_url ?? ''}" 
+            data-img-id="${person.id}"
+          >
+
+          <div>Votes: ${voteCount}</div>
+
+          <input type="file" data-id="${person.id}" class="upload-input" accept="image/*">
           <button data-id="${person.id}" class="upload-btn">Foto hochladen</button>
         `
-    
+
         list.appendChild(div)
       })
-    
-      // Buttons aktivieren
+
+      // Vote Buttons
       document.querySelectorAll('.vote-btn').forEach(btn => {
         btn.addEventListener('click', () => toggleVote(btn.dataset.id))
       })
 
-          document.querySelectorAll('.upload-btn').forEach(btn => {
-  btn.addEventListener('click', async () => {
-    const id = btn.dataset.id
-    const fileInput = document.querySelector(`.upload-input[data-id="${id}"]`)
-    const file = fileInput.files[0]
-    console.log(file)
-    if (!file) {
-      alert('Bitte ein Bild auswählen.')
-      return
+      // Upload Buttons
+      document.querySelectorAll('.upload-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.dataset.id
+          const fileInput = document.querySelector(`.upload-input[data-id="${id}"]`)
+          const file = fileInput.files[0]
+
+          if (!file) {
+            alert('Bitte ein Bild auswählen.')
+            return
+          }
+
+          await uploadImage(id, file)
+        })
+      })
     }
-    console.log('upload image')
-    await uploadImage(id, file)
-  })
-})
-    }
-
-
-
-
-    async function toggleVote(personId) {
-  const user = (await supabase.auth.getUser()).data.user
-
-  // Prüfen ob User schon für diese Person votet
-  const { data: existingVote } = await supabase
-    .from('vote')
-    .select('*')
-    .eq('person_id', personId)
-    .eq('voter_id', user.id)
-    .maybeSingle()
-
-  if (existingVote) {
-    // UNVOTE
-    await supabase.from('vote').delete().eq('id', existingVote.id)
-    loadPersons()
-    return
-  }
-
-  // Prüfen ob User schon 5 Votes hat
-  const { data: myVotes } = await supabase
-    .from('vote')
-    .select('*')
-    .eq('voter_id', user.id)
-
-  if (myVotes.length >= 5) {
-    alert('Du hast bereits 5 Votes vergeben.')
-    return
-  }
-
-  // VOTE
-  await supabase.from('vote').insert({
-    person_id: personId,
-    voter_id: user.id
-  })
-
-  loadPersons()
-}
-
-    loadPersons()
 
     // -----------------------------
-    // 3) Neue Person hinzufügen
+    // Vote toggeln
+    // -----------------------------
+    async function toggleVote(personId) {
+      const user = (await supabase.auth.getUser()).data.user
+
+      const { data: existingVote } = await supabase
+        .from('vote')
+        .select('*')
+        .eq('person_id', personId)
+        .eq('voter_id', user.id)
+        .maybeSingle()
+
+      if (existingVote) {
+        await supabase.from('vote').delete().eq('id', existingVote.id)
+        return loadPersons()
+      }
+
+      const { data: myVotes } = await supabase
+        .from('vote')
+        .select('*')
+        .eq('voter_id', user.id)
+
+      if (myVotes.length >= 5) {
+        alert('Du hast bereits 5 Votes vergeben.')
+        return
+      }
+
+      await supabase.from('vote').insert({
+        person_id: personId,
+        voter_id: user.id
+      })
+
+      loadPersons()
+    }
+
+    // -----------------------------
+    // Neue Person hinzufügen
     // -----------------------------
     document.getElementById('add-btn').addEventListener('click', async () => {
       const nameInput = document.getElementById('person-name')
@@ -234,72 +259,58 @@
       if (!name) return
 
       const { data: existing } = await supabase
-  .from('person')
-  .select('id')
-  .eq('name', name)
-  .maybeSingle()
+        .from('person')
+        .select('id')
+        .eq('name', name)
+        .maybeSingle()
 
-      if(existing) {
+      if (existing) {
         alert('Der Name existiert schon.')
         return
       }
-      
-      const { error } = await supabase
-        .from('person')
-        .insert({ name })
 
-      if (error) {
-        alert('Fehler: ' + error.message)
-        return
-      }
+      await supabase.from('person').insert({ name })
 
       nameInput.value = ''
       loadPersons()
     })
 
+    // -----------------------------
+    // Bild hochladen
+    // -----------------------------
+    async function uploadImage(personId, file) {
+      const fileExt = file.name.split('.').pop()
+      const fileName = `${personId}.${fileExt}`
+      const filePath = `person-images/${fileName}`
 
-async function uploadImage(personId, file) {
-  const fileExt = file.name.split('.').pop()
-  const fileName = `${personId}.${fileExt}`
-  const filePath = `person-images/${fileName}`
+      const { error: uploadError } = await supabase.storage
+        .from('person-images')
+        .upload(filePath, file, { upsert: true })
 
-  // Datei hochladen
-  const { error: uploadError } = await supabase.storage
-    .from('person-images')
-    .upload(filePath, file, { upsert: true })
+      if (uploadError) {
+        alert('Upload fehlgeschlagen.')
+        return
+      }
 
-  if (uploadError) {
-    console.error(uploadError)
-    alert('Upload fehlgeschlagen.')
-    return
-  }
+      const { data: publicUrlData } = supabase.storage
+        .from('person-images')
+        .getPublicUrl(filePath)
 
-  // Public URL holen
-  const { data: publicUrlData } = supabase.storage
-    .from('person-images')
-    .getPublicUrl(filePath)
+      const publicUrl = publicUrlData.publicUrl
 
-  const publicUrl = publicUrlData.publicUrl
+      await supabase
+        .from('person')
+        .update({ image_url: publicUrl })
+        .eq('id', personId)
 
-  // URL in DB speichern
-  const { error: updateError } = await supabase
-    .from('person')
-    .update({ image_url: publicUrl })
-    .eq('id', personId)
+      // Bild sofort aktualisieren
+      const img = document.querySelector(`img[data-img-id="${personId}"]`)
+      if (img) {
+        img.src = publicUrl + `?t=${Date.now()}`
+      }
+    }
 
-  if (updateError) {
-    console.error(updateError)
-    alert('Fehler beim Speichern der Bild-URL.')
-    return
-  }
-
-  // 🔥 Bild sofort aktualisieren
-  const img = document.querySelector(`img[data-img-id="${personId}"]`)
-  if (img) {
-    img.src = publicUrl + `?t=${Date.now()}`  // Cache-Busting
-  }
-}
-
+    loadPersons()
   </script>
 
 </body>
