@@ -148,6 +148,8 @@
           <button data-id="${person.id}" class="vote-btn">
             ${hasVoted ? 'Unvote' : 'Vote'}
           </button>
+          <input type="file" data-id="${person.id}" class="upload-input" accept="image/*" style="margin-top:6px;">
+          <button data-id="${person.id}" class="upload-btn">Foto hochladen</button>
         `
     
         list.appendChild(div)
@@ -202,6 +204,19 @@
 
     loadPersons()
 
+    document.querySelectorAll('.upload-btn').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    const id = btn.dataset.id
+    const fileInput = document.querySelector(`.upload-input[data-id="${id}"]`)
+    const file = fileInput.files[0]
+    if (!file) {
+      alert('Bitte ein Bild auswählen.')
+      return
+    }
+    await uploadImage(id, file)
+  })
+})
+
     // -----------------------------
     // 3) Neue Person hinzufügen
     // -----------------------------
@@ -234,6 +249,45 @@
       nameInput.value = ''
       loadPersons()
     })
+
+
+    async function uploadImage(personId, file) {
+  const fileExt = file.name.split('.').pop()
+  const fileName = `${personId}.${fileExt}`
+  const filePath = `person-images/${fileName}`
+
+  // 1) Datei hochladen (überschreibt alte)
+  const { error: uploadError } = await supabase.storage
+    .from('person-images')
+    .upload(filePath, file, { upsert: true })
+
+  if (uploadError) {
+    alert('Upload fehlgeschlagen.')
+    console.error(uploadError)
+    return
+  }
+
+  // 2) Public URL holen
+  const { data: publicUrlData } = supabase.storage
+    .from('person-images')
+    .getPublicUrl(filePath)
+
+  const publicUrl = publicUrlData.publicUrl
+
+  // 3) URL in DB speichern
+  const { error: updateError } = await supabase
+    .from('person')
+    .update({ image_url: publicUrl })
+    .eq('id', personId)
+
+  if (updateError) {
+    alert('Fehler beim Speichern der Bild-URL.')
+    console.error(updateError)
+    return
+  }
+
+  loadPersons()
+}
   </script>
 
 </body>
