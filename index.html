@@ -345,10 +345,15 @@
     
       const publicUrl = publicUrlData.publicUrl
     
-      await supabase
+      const { error: updateError } = await supabase
         .from('person')
         .update({ image_url: publicUrl })
         .eq('id', personId)
+
+      if (updateError) {
+        alert('Img Url konnte nicht in die DB geschrieben werden.')
+        return
+      }
     
       // Bild sofort aktualisieren
       const img = document.querySelector(`img[data-img-id="${personId}"]`)
