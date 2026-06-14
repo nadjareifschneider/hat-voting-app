@@ -168,7 +168,7 @@
 
         div.innerHTML = `
           <div class="person-header">
-            <div class="person-name">${person.name}</div>
+            <div class="person-name">${person.name} (${voteCount} votes)</div>
             <button 
               data-id="${person.id}" 
               class="vote-btn ${hasVoted ? 'unvote' : 'vote'}"
@@ -181,8 +181,6 @@
             src="${person.image_url ?? ''}" 
             data-img-id="${person.id}"
           >
-
-          <div>Votes: ${voteCount}</div>
 
           <input type="file" data-id="${person.id}" class="upload-input" accept="image/*">
           <button data-id="${person.id}" class="upload-btn">Foto hochladen</button>
