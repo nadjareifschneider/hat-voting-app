@@ -228,11 +228,6 @@
         `
 
         list.appendChild(div)
-
-        const img = document.querySelector(`img[data-img-id="${person.id}"]`)
-        if (img) {
-          img.src = person.image_url
-        }
       })
 
       // Vote Buttons
@@ -323,43 +318,73 @@
     // Bild hochladen
     // -----------------------------
     async function uploadImage(personId, file) {
+      console.log("Starte Upload für Person:", personId)
     
       // 1) Bild verkleinern
-      file = await resizeImage(file, 1024, 0.8)
+      try {
+        file = await resizeImage(file, 1024, 0.8)
+        console.log("Bild erfolgreich verkleinert:", file.size, "Bytes")
+      } catch (err) {
+        console.error("Fehler beim Verkleinern:", err)
+        alert("Bild konnte nicht verkleinert werden.")
+        return
+      }
     
       const fileName = `${personId}.jpg`
       const filePath = `person-images/${fileName}`
     
+      // 2) Upload zu Supabase
       const { error: uploadError } = await supabase.storage
         .from('person-images')
         .upload(filePath, file, { upsert: true })
     
       if (uploadError) {
-        alert('Upload fehlgeschlagen.')
+        console.error("Upload-Fehler:", uploadError)
+        alert("Upload fehlgeschlagen (Storage).")
         return
       }
     
-      const { data: publicUrlData } = supabase.storage
+      console.log("Upload erfolgreich:", filePath)
+    
+      // 3) Public URL holen
+      const { data: publicUrlData, error: urlError } = supabase.storage
         .from('person-images')
         .getPublicUrl(filePath)
     
-      const publicUrl = publicUrlData.publicUrl
+      if (urlError || !publicUrlData) {
+        console.error("Fehler beim Holen der Public URL:", urlError)
+        alert("Bild-URL konnte nicht erzeugt werden.")
+        return
+      }
     
+      const publicUrl = publicUrlData.publicUrl
+      console.log("Public URL:", publicUrl)
+    
+      // 4) URL in DB speichern
       const { error: updateError } = await supabase
         .from('person')
         .update({ image_url: publicUrl })
         .eq('id', personId)
-
+    
       if (updateError) {
-        alert('Upload fehlgeschlagen.')
-        console.log('Img Url konnte nicht in die DB geschrieben werden.')
+        console.error("DB-Update-Fehler:", updateError)
+        alert("Bild-URL konnte nicht in der Datenbank gespeichert werden.")
         return
       }
     
-      // Bild sofort aktualisieren
-      const img = document.querySelector(`img[data-img-id="${personId}"]`)
-      if (img) {
-        img.src = publicUrl + `?t=${Date.now()}`
+      console.log("DB erfolgreich aktualisiert.")
+    
+      // 5) Bild sofort im UI aktualisieren
+      try {
+        const img = document.querySelector(`img[data-img-id="${personId}"]`)
+        if (img) {
+          img.src = publicUrl + `?t=${Date.now()}`
+          console.log("Bild im UI aktualisiert.")
+        } else {
+          console.warn("Kein IMG-Element gefunden für Person:", personId)
+        }
+      } catch (err) {
+        console.error("Fehler beim Aktualisieren des Bildes im UI:", err)
       }
     }
 
