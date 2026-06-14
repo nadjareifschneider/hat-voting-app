@@ -178,7 +178,7 @@
           </div>
 
           <img 
-            src="${person.image_url ?? ''}" 
+            src="${person.image_url ? person.image_url + '?t=' + Date.now() : ''}" 
             data-img-id="${person.id}"
           >
 
