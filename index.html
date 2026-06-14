@@ -65,31 +65,101 @@
     }
 
     // -----------------------------
-    // 2) Personen laden
+    // 2) Personen und Votes laden
     // -----------------------------
     async function loadPersons() {
       const list = document.getElementById('person-list')
       list.innerHTML = 'Lade Personen…'
-
-      const { data, error } = await supabase
+    
+      const user = (await supabase.auth.getUser()).data.user
+    
+      // Personen + Votes laden
+      const { data: persons, error } = await supabase
         .from('person')
-        .select('*')
+        .select(`
+          id,
+          name,
+          vote:vote(person_id, voter_id)
+        `)
         .order('name', { ascending: true })
-
+    
       if (error) {
         list.innerHTML = 'Fehler beim Laden.'
         console.error(error)
         return
       }
-
+    
+      // Votes des Users laden
+      const { data: myVotes } = await supabase
+        .from('vote')
+        .select('*')
+        .eq('voter_id', user.id)
+    
       list.innerHTML = ''
-      data.forEach(person => {
+    
+      persons.forEach(person => {
         const div = document.createElement('div')
         div.className = 'person'
-        div.textContent = person.name
+    
+        const voteCount = person.vote.length
+        const hasVoted = myVotes.some(v => v.person_id === person.id)
+    
+        div.innerHTML = `
+          <strong>${person.name}</strong><br>
+          Votes: ${voteCount}<br>
+          <button data-id="${person.id}" class="vote-btn">
+            ${hasVoted ? 'Unvote' : 'Vote'}
+          </button>
+        `
+    
         list.appendChild(div)
       })
+    
+      // Buttons aktivieren
+      document.querySelectorAll('.vote-btn').forEach(btn => {
+        btn.addEventListener('click', () => toggleVote(btn.dataset.id))
+      })
     }
+
+
+    async function toggleVote(personId) {
+  const user = (await supabase.auth.getUser()).data.user
+
+  // Prüfen ob User schon für diese Person votet
+  const { data: existingVote } = await supabase
+    .from('vote')
+    .select('*')
+    .eq('person_id', personId)
+    .eq('voter_id', user.id)
+    .maybeSingle()
+
+  if (existingVote) {
+    // UNVOTE
+    await supabase.from('vote').delete().eq('id', existingVote.id)
+    loadPersons()
+    return
+  }
+
+  // Prüfen ob User schon 5 Votes hat
+  const { data: myVotes } = await supabase
+    .from('vote')
+    .select('*')
+    .eq('voter_id', user.id)
+
+  if (myVotes.length >= 5) {
+    alert('Du hast bereits 5 Votes vergeben.')
+    return
+  }
+
+  // VOTE
+  await supabase.from('vote').insert({
+    person_id: personId,
+    voter_id: user.id
+  })
+
+  loadPersons()
+}
+
 
     loadPersons()
 
