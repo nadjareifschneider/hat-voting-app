@@ -219,7 +219,7 @@
           </div>
 
           <img 
-            src="${person.image_url}" 
+            src="${person.image_url ? person.image_url + '?t=' + Date.now() : ''}" 
             data-img-id="${person.id}"
           >
 
@@ -318,14 +318,14 @@
     // Bild hochladen
     // -----------------------------
     async function uploadImage(personId, file) {
-      console.log("Starte Upload für Person:", personId)
+      console.log("🔄 Starte Upload für Person:", personId)
     
       // 1) Bild verkleinern
       try {
         file = await resizeImage(file, 1024, 0.8)
-        console.log("Bild erfolgreich verkleinert:", file.size, "Bytes")
+        console.log("📉 Bild verkleinert:", file.size, "Bytes")
       } catch (err) {
-        console.error("Fehler beim Verkleinern:", err)
+        console.error("❌ Fehler beim Verkleinern:", err)
         alert("Bild konnte nicht verkleinert werden.")
         return
       }
@@ -334,17 +334,17 @@
       const filePath = `person-images/${fileName}`
     
       // 2) Upload zu Supabase
-      const { error: uploadError } = await supabase.storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
         .from('person-images')
         .upload(filePath, file, { upsert: true })
     
       if (uploadError) {
-        console.error("Upload-Fehler:", uploadError)
+        console.error("❌ Upload-Fehler:", uploadError)
         alert("Upload fehlgeschlagen (Storage).")
         return
       }
     
-      console.log("Upload erfolgreich:", filePath)
+      console.log("✅ Upload erfolgreich:", uploadData)
     
       // 3) Public URL holen
       const { data: publicUrlData, error: urlError } = supabase.storage
@@ -352,41 +352,43 @@
         .getPublicUrl(filePath)
     
       if (urlError || !publicUrlData) {
-        console.error("Fehler beim Holen der Public URL:", urlError)
+        console.error("❌ Fehler beim Holen der Public URL:", urlError)
         alert("Bild-URL konnte nicht erzeugt werden.")
         return
       }
     
       const publicUrl = publicUrlData.publicUrl
-      console.log("Public URL:", publicUrl)
+      console.log("🌐 Public URL:", publicUrl)
     
       // 4) URL in DB speichern
-      const { error: updateError } = await supabase
+      const { data: updateData, error: updateError } = await supabase
         .from('person')
         .update({ image_url: publicUrl })
         .eq('id', personId)
+        .select()
     
       if (updateError) {
-        console.error("DB-Update-Fehler:", updateError)
+        console.error("❌ DB-Update-Fehler:", updateError)
         alert("Bild-URL konnte nicht in der Datenbank gespeichert werden.")
         return
       }
     
-      console.log("DB erfolgreich aktualisiert.")
+      console.log("📝 DB erfolgreich aktualisiert:", updateData)
     
       // 5) Bild sofort im UI aktualisieren
       try {
         const img = document.querySelector(`img[data-img-id="${personId}"]`)
         if (img) {
           img.src = publicUrl + `?t=${Date.now()}`
-          console.log("Bild im UI aktualisiert.")
+          console.log("🖼️ Bild im UI aktualisiert.")
         } else {
-          console.warn("Kein IMG-Element gefunden für Person:", personId)
+          console.warn("⚠️ Kein IMG-Element gefunden für Person:", personId)
         }
       } catch (err) {
-        console.error("Fehler beim Aktualisieren des Bildes im UI:", err)
+        console.error("❌ Fehler beim Aktualisieren des Bildes im UI:", err)
       }
     }
+
 
     async function loadHeaderImage() {
       const { data } = supabase.storage
