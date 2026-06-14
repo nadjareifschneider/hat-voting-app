@@ -348,7 +348,7 @@
     async function loadHeaderImage() {
       const { data } = supabase.storage
         .from('person-images')
-        .getPublicUrl('header.jpg')
+        .getPublicUrl('person-images/header.jpg')
     
       document.getElementById('header-image').src = data.publicUrl + '?t=' + Date.now()
     }
