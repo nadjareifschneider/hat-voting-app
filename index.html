@@ -280,6 +280,8 @@
     .update({ image_url: publicUrl })
     .eq('id', personId)
 
+console.log(publicUrl)
+      
   if (updateError) {
     alert('Fehler beim Speichern der Bild-URL.')
     console.error(updateError)
