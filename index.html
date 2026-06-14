@@ -43,6 +43,10 @@
       margin-bottom: 12px;
     }
 
+    #person-list {
+      margin-top: 20px;
+    }
+
     /* Buttons */
     .vote-btn {
       padding: 6px 14px;
@@ -150,7 +154,12 @@
           image_url,
           vote:vote(person_id, voter_id)
         `)
-        .order('name', { ascending: true })
+
+      persons.sort((a, b) => {
+        const diff = b.vote.length - a.vote.length
+        if (diff !== 0) return diff
+        return a.name.localeCompare(b.name)
+      })
 
       const { data: myVotes } = await supabase
         .from('vote')
