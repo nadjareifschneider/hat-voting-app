@@ -194,6 +194,9 @@
       list.innerHTML = ''
 
       persons.forEach(person => {
+
+        console.log(person.image_url)
+        
         const hasVoted = myVotes.some(v => v.person_id === person.id)
         const voteCount = person.vote.length
 
