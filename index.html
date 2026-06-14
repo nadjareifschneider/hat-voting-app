@@ -138,13 +138,15 @@
         div.className = 'person'
     
         const voteCount = person.vote.length
-        //const hasVoted = myVotes.some(v => v.person_id === person.id)
-        const hasVoted = false
+        const hasVoted = myVotes.some(v => v.person_id === person.id)
     
         div.innerHTML = `
           <strong>${person.name}</strong><br>
           Votes: ${voteCount}<br>
           <button data-id="${person.id}" class="vote-btn">
+            ${hasVoted ? 'Unvote' : 'Vote'}
+          </button>
+          <button data-id="${person.id}" class="vote-btn2">
             ${hasVoted ? 'Unvote' : 'Vote'}
           </button>
         `
@@ -154,6 +156,10 @@
     
       // Buttons aktivieren
       document.querySelectorAll('.vote-btn').forEach(btn => {
+        btn.addEventListener('click', () => toggleVote(btn.dataset.id))
+      })
+
+            document.querySelectorAll('.vote-btn2').forEach(btn => {
         btn.addEventListener('click', () => toggleVote(btn.dataset.id))
       })
     }
