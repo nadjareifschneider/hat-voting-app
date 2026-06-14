@@ -213,6 +213,17 @@
 
       if (!name) return
 
+      const { data: existing } = await supabase
+  .from('person')
+  .select('id')
+  .eq('name', name)
+  .maybeSingle()
+
+      if(existing) {
+        alert('Der Name existiert schon.')
+        return
+      }
+      
       const { error } = await supabase
         .from('person')
         .insert({ name })
