@@ -144,6 +144,11 @@
     
         div.innerHTML = `
           <strong>${person.name}</strong><br>
+           <img 
+    src="${person.image_url ?? ''}" 
+    data-img-id="${person.id}" 
+    style="max-width:120px; margin:6px 0;"
+  ><br>
           Votes: ${voteCount}<br>
           <button data-id="${person.id}" class="vote-btn">
             ${hasVoted ? 'Unvote' : 'Vote'}
@@ -253,45 +258,48 @@
     })
 
 
-    async function uploadImage(personId, file) {
+async function uploadImage(personId, file) {
   const fileExt = file.name.split('.').pop()
   const fileName = `${personId}.${fileExt}`
   const filePath = `person-images/${fileName}`
 
-  // 1) Datei hochladen (überschreibt alte)
+  // Datei hochladen
   const { error: uploadError } = await supabase.storage
     .from('person-images')
     .upload(filePath, file, { upsert: true })
 
   if (uploadError) {
-    alert('Upload fehlgeschlagen.')
     console.error(uploadError)
+    alert('Upload fehlgeschlagen.')
     return
   }
 
-  // 2) Public URL holen
+  // Public URL holen
   const { data: publicUrlData } = supabase.storage
     .from('person-images')
     .getPublicUrl(filePath)
 
   const publicUrl = publicUrlData.publicUrl
 
-  // 3) URL in DB speichern
+  // URL in DB speichern
   const { error: updateError } = await supabase
     .from('person')
     .update({ image_url: publicUrl })
     .eq('id', personId)
 
-console.log(publicUrl)
-      
   if (updateError) {
-    alert('Fehler beim Speichern der Bild-URL.')
     console.error(updateError)
+    alert('Fehler beim Speichern der Bild-URL.')
     return
   }
 
-  loadPersons()
+  // 🔥 Bild sofort aktualisieren
+  const img = document.querySelector(`img[data-img-id="${personId}"]`)
+  if (img) {
+    img.src = publicUrl + `?t=${Date.now()}`  // Cache-Busting
+  }
 }
+
   </script>
 
 </body>
