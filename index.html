@@ -351,7 +351,8 @@
         .eq('id', personId)
 
       if (updateError) {
-        alert('Img Url konnte nicht in die DB geschrieben werden.')
+        alert('Upload fehlgeschlagen.')
+        console.log('Img Url konnte nicht in die DB geschrieben werden.')
         return
       }
     
