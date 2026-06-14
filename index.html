@@ -92,6 +92,12 @@
       cursor: pointer;
     }
 
+    .top-person {
+      border: 2px solid gold;
+      box-shadow: 0 0 12px rgba(255, 215, 0, 0.7);
+      background: #fffbe6;
+    }
+
     /* Mobile */
     @media (max-width: 600px) {
       body {
@@ -155,6 +161,8 @@
           vote:vote(person_id, voter_id)
         `)
 
+      const maxVotes = Math.max(...persons.map(p => p.vote.length))
+
       persons.sort((a, b) => {
         const diff = b.vote.length - a.vote.length
         if (diff !== 0) return diff
@@ -171,6 +179,10 @@
       persons.forEach(person => {
         const hasVoted = myVotes.some(v => v.person_id === person.id)
         const voteCount = person.vote.length
+
+        if (voteCount === maxVotes && voteCount > 0) {
+          div.classList.add('top-person')
+        }
 
         const div = document.createElement('div')
         div.className = 'person'
