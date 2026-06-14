@@ -138,7 +138,8 @@
         div.className = 'person'
     
         const voteCount = person.vote.length
-        const hasVoted = myVotes.some(v => v.person_id === person.id)
+        //const hasVoted = myVotes.some(v => v.person_id === person.id)
+        const hasVoted = false
     
         div.innerHTML = `
           <strong>${person.name}</strong><br>
@@ -182,10 +183,10 @@
     .select('*')
     .eq('voter_id', user.id)
 
-  if (myVotes.length >= 5) {
+  /*if (myVotes.length >= 5) {
     alert('Du hast bereits 5 Votes vergeben.')
     return
-  }
+  }*/
 
   // VOTE
   await supabase.from('vote').insert({
