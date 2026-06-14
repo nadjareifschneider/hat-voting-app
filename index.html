@@ -15,10 +15,12 @@
     #person-list {
       margin-top: 20px;
     }
-    .person {
-      padding: 10px;
-      border-bottom: 1px solid #ddd;
-    }
+.person {
+  background: #fafafa;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  border: 1px solid #eee;
+}
     #new-person {
       margin-top: 30px;
       display: flex;
@@ -34,6 +36,40 @@
       font-size: 16px;
       cursor: pointer;
     }
+
+    /* Mobile-Optimierung */
+@media (max-width: 600px) {
+  body {
+    margin: 20px;
+    padding: 0 4px;
+  }
+
+  h1 {
+    font-size: 1.6rem;
+    text-align: center;
+  }
+
+  #new-person {
+    flex-direction: column;
+  }
+
+  input[type="text"] {
+    width: 100%;
+    font-size: 18px;
+  }
+
+  button {
+    width: 100%;
+    font-size: 18px;
+    padding: 12px;
+  }
+.person {
+  background: #fafafa;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  border: 1px solid #eee;
+}
+}
   </style>
 </head>
 <body>
