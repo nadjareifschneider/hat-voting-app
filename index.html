@@ -368,6 +368,11 @@
         .select()
 
       //TEST UPDATE
+      const test = await supabase
+        .from('person')
+        .select('*')
+        .eq('id', personId);
+      console.log("Kann ich die Zeile sehen?", test);
       await supabase
         .from('person')
         .update({ name: "TEST" })
