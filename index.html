@@ -159,15 +159,21 @@
         btn.addEventListener('click', () => toggleVote(btn.dataset.id))
       })
 
-            document.querySelectorAll('.vote-btn2').forEach(btn => {
-        btn.addEventListener('click', () => {
-          await supabase.from('vote').insert({
-    person_id: btn.dataset.id,
-    voter_id: user.id
+document.querySelectorAll('.vote-btn2').forEach(btn => {
+  btn.addEventListener('click', () => {
+    vote(btn.dataset.id, user.id).then(() => loadPersons())
   })
-                            })
-      })
+})
     }
+
+
+    async function vote(personId, userId) {
+  return await supabase.from('vote').insert({
+    person_id: personId,
+    voter_id: userId
+  })
+}
+
 
 
     async function toggleVote(personId) {
