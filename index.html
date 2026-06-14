@@ -29,7 +29,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
+      gap: 10px;
     }
 
     .person-name {
@@ -49,12 +49,9 @@
 
     /* Buttons */
     .vote-btn {
-      padding: 6px 14px;
-      border-radius: 6px;
-      border: none;
-      color: white;
-      cursor: pointer;
-      font-size: 14px;
+      flex-shrink: 0;
+      width: auto;
+      white-space: nowrap;
     }
 
     .vote {
@@ -98,6 +95,19 @@
       background: #fffbe6;
     }
 
+    #header-image-wrapper {
+      display: flex;
+      justify-content: flex-start;
+      margin-bottom: 10px;
+    }
+    
+    #header-image {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+
     /* Mobile */
     @media (max-width: 600px) {
       body {
@@ -118,6 +128,10 @@
 <body>
 
   <h2>Annas & Nadjas Hutvoting</h2>
+  <div id="header-image-wrapper">
+    <img id="header-image" src="" alt="Header" />
+  </div>
+    
   <div>Du hast 5 Stimmen, verteile sie weise.</div>
 
   <div id="new-person">
@@ -180,12 +194,12 @@
         const hasVoted = myVotes.some(v => v.person_id === person.id)
         const voteCount = person.vote.length
 
+        const div = document.createElement('div')
+        div.className = 'person'
+        
         if (voteCount === maxVotes && voteCount > 0) {
           div.classList.add('top-person')
         }
-
-        const div = document.createElement('div')
-        div.className = 'person'
 
         div.innerHTML = `
           <div class="person-header">
@@ -329,6 +343,15 @@
       }
     }
 
+    async function loadHeaderImage() {
+      const { data } = supabase.storage
+        .from('person-images')
+        .getPublicUrl('header.jpg')
+    
+      document.getElementById('header-image').src = data.publicUrl + '?t=' + Date.now()
+    }
+
+    loadHeaderImage()
     loadPersons()
   </script>
 
