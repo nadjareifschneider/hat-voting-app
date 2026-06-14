@@ -72,6 +72,7 @@
       border: none;
       color: white;
       cursor: pointer;
+      font-size: 14px;
     }
     
     /* New Person Form */
@@ -329,7 +330,7 @@
 
       const { data: publicUrlData } = supabase.storage
         .from('person-images')
-        .getPublicUrl(filePath)
+        .getPublicUrl('person-images/' + filePath)
 
       const publicUrl = publicUrlData.publicUrl
 
