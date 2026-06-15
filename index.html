@@ -52,13 +52,16 @@
 
     /* Buttons */
     .vote-btn {
-      color: white;
-      border-radius: 6px;
+      font-size: 24px;
+      padding: 12px 20px;
+      border-radius: 50px;
       border: none;
-      flex-shrink: 0;
-      width: auto;
-      white-space: nowrap;
-      font-size: 14px;
+      background: #f5e9d3;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+    .vote-btn:active {
+      transform: scale(0.9);
     }
 
     .vote {
