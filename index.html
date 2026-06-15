@@ -209,7 +209,7 @@
 
         div.innerHTML = `
           <div class="person-header">
-            <div class="person-name">${person.name} (${voteCount} votes)</div>
+            <div class="person-name">&#x2728; ${person.name} &#x2728; (${voteCount} votes)</div>
             <button 
               data-id="${person.id}" 
               class="vote-btn ${hasVoted ? 'unvote' : 'vote'}"
