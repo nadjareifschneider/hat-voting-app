@@ -90,7 +90,7 @@
     /* New Person Form */
     #new-person {
       margin-top: 30px;
-      margin-bottom: 10px;
+      margin-bottom: 20px;
       display: flex;
       gap: 10px;
     }
@@ -218,6 +218,12 @@
           <input type="file" data-id="${person.id}" class="upload-input" accept="image/*">
           <button data-id="${person.id}" class="upload-btn">Upload photo</button>
         `
+
+        const { data: publicUrlData, error: urlError } = supabase.storage
+          .from('person-images')
+          .getPublicUrl(filePath)
+        
+        div.style.backgroundImage = `url('${publicUrlData + '/hat-pink.png'}')`;
 
         list.appendChild(div)
       })
