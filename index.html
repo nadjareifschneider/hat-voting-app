@@ -232,11 +232,13 @@
           <button data-id="${person.id}" class="upload-btn">Upload photo</button>
         `
 
+        const fileName = `hat-pink.png`
+        const filePath = `person-images/${fileName}`
         const { data: publicUrlData, error: urlError } = supabase.storage
           .from('person-images')
           .getPublicUrl(filePath)
         
-        div.style.backgroundImage = `url('${publicUrlData + '/hat-pink.png'}')`;
+        div.style.backgroundImage = `url('${publicUrlData}')`;
 
         list.appendChild(div)
       })
