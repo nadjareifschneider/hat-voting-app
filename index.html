@@ -6,95 +6,108 @@
   <title>Annas & Nadjas Hutvoting</title>
 
   <style>
-  body {
-    font-family: sans-serif;
-    max-width: 600px;
-    margin: 40px auto;
-  }
-  
-  /* Person Card */
-  .person {
-    background: #fafafa;
-    border-radius: 12px;
-    border: 1px solid #ddd;
-    padding: 20px;
-    margin-bottom: 20px;
-  }
-  
-  /* Header: Name links, Votes rechts */
-  .person-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .person-name {
-    font-size: 1.3rem;
-    font-weight: bold;
-  }
-  
-  .vote-badge {
-    background: gold;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-weight: bold;
-    font-size: 1rem;
-    box-shadow: 0 0 6px rgba(255, 215, 0, 0.7);
-  }
-  
-  /* Body: Bild links, Button rechts */
-  .person-body {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    margin-top: 15px;
-  }
-  
-  .person img {
-    width: 120px;
-    border-radius: 8px;
-  }
-  
-  /* Vote Button */
-  .vote-btn {
-    font-size: 20px;
-    padding: 16px 24px;
-    border-radius: 12px;
-    border: none;
-    cursor: pointer;
-    transition: transform 0.15s ease;
-    color: white;
-  }
-  
-  .vote-btn:active {
-    transform: scale(0.9);
-  }
-  
-  .vote {
-    background: #2ecc71;
-  }
-  
-  .unvote {
-    background: #e74c3c;
-  }
-  
-  /* Upload */
-  .upload-btn {
-    margin-top: 8px;
-    padding: 6px 12px;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
-    font-size: 14px;
-  }
-  
-  /* Mobile */
-  @media (max-width: 600px) {
-    .person-body {
-      flex-direction: column;
-      align-items: flex-start;
+    body {
+      font-family: sans-serif;
+      max-width: 600px;
+      margin: 40px auto;
     }
-  }
+    
+    /* Person Card */
+    .person {
+      background: #fafafa;
+      border-radius: 12px;
+      border: 1px solid #ddd;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    
+    /* Header: Name links, Votes rechts */
+    .person-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .person-name {
+      font-size: 1.3rem;
+      font-weight: bold;
+    }
+    
+    .vote-badge {
+      background: gold;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 1rem;
+      box-shadow: 0 0 6px rgba(255, 215, 0, 0.7);
+    }
+    
+    /* Body: Bild links, Button rechts */
+    .person-body {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-top: 15px;
+    }
+    
+    .person img {
+      width: 120px;
+      border-radius: 8px;
+    }
+    
+    /* Vote Button */
+    .vote-btn {
+      font-size: 20px;
+      padding: 16px 24px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+      color: white;
+    }
+    
+    .vote-btn:active {
+      transform: scale(0.9);
+    }
+    
+    .vote {
+      background: #2ecc71;
+    }
+    
+    .unvote {
+      background: #e74c3c;
+    }
+    
+    /* Upload */
+    .upload-btn {
+      margin-top: 8px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    /* New Person Form */
+    #new-person {
+      margin-top: 30px;
+      display: flex;
+      gap: 10px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 8px;
+      font-size: 16px;
+    }
+  
+    /* Mobile */
+    @media (max-width: 600px) {
+      .person-body {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
   </style>
 </head>
 
@@ -108,7 +121,7 @@
   <div>Du hast 5 Stimmen, verteile sie weise.</div>
 
   <div id="new-person">
-    <input id="person-name" type="text" placeholder="Hutträger:in eingeben" />
+    <input id="person-name" type="text" placeholder="Enter name" />
     <button id="add-btn" class="upload-btn">Add</button>
   </div>
 
@@ -197,7 +210,7 @@
           </div>
         
           <input type="file" data-id="${person.id}" class="upload-input" accept="image/*">
-          <button data-id="${person.id}" class="upload-btn">Foto hochladen</button>
+          <button data-id="${person.id}" class="upload-btn">Upload photo</button>
         `
 
         list.appendChild(div)
