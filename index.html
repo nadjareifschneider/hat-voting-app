@@ -89,10 +89,6 @@
       background: #2ecc71;
     }
     
-    .unvote {
-      background: #e74c3c;
-    }
-    
     /* Upload */
     .upload-btn {
       margin-top: 8px;
@@ -221,7 +217,7 @@
             <div class="person-name">&#x2728; ${person.name} &#x2728;</div>
             <button 
               data-id="${person.id}" 
-              class="vote-btn ${hasVoted ? 'unvote' : 'vote'} vote-badge">
+              class="vote-btn ${hasVoted ? 'vote' : ''} vote-badge">
               &#127775; ${voteCount}
             </button>
           </div>
