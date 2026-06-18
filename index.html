@@ -191,7 +191,9 @@
       const sortMode = params.get('sort') || 'name'
 
       if (sortMode === 'votes') {
-        persons.sort((a, b) => b.vote.length - a.vote.length)
+        const diff = b.vote.length - a.vote.length
+        if (diff !== 0) return diff
+        return a.name.localeCompare(b.name)
       } else {
         persons.sort((a, b) => a.name.localeCompare(b.name))
       }
