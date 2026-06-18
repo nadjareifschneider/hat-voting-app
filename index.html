@@ -187,9 +187,14 @@
 
       const maxVotes = Math.max(...persons.map(p => p.vote.length))
 
-      persons.sort((a, b) => {
-        return a.name.localeCompare(b.name)
-      })
+      const params = new URLSearchParams(window.location.search)
+      const sortMode = params.get('sort') || 'name'
+
+      if (sortMode === 'votes') {
+        persons.sort((a, b) => b.vote.length - a.vote.length)
+      } else {
+        persons.sort((a, b) => a.name.localeCompare(b.name))
+      }
 
       const { data: myVotes } = await supabase
         .from('vote')
