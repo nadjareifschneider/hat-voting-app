@@ -216,7 +216,8 @@
             <button 
               data-id="${person.id}" 
               class="vote-btn ${hasVoted ? 'vote' : ''} vote-badge">
-              &#127775; ${voteCount}
+              &#127775; 
+              <span class="vote-count">${voteCount}</span>
             </button>
           </div>
         
@@ -262,9 +263,10 @@
     async function toggleVote(personId) {
       const user = (await supabase.auth.getUser()).data.user
     
-      // Button im DOM finden
+      // Vote Count im DOM finden
       const btn = document.querySelector(`.vote-btn[data-id="${personId}"]`)
-      let count = parseInt(btn.textContent.replace('&#127775;', '').trim())
+      const countSpan = btn.querySelector('.vote-count')
+      let count = parseInt(countSpan.textContent.trim())
     
       // Prüfen ob Vote existiert
       const { data: existingVote } = await supabase
