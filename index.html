@@ -284,7 +284,7 @@
     
         // DOM aktualisieren
         count--
-        btn.textContent = `${count}`
+        countSpan.textContent = count
         btn.classList.remove('vote')
         return
       }
@@ -308,7 +308,7 @@
     
       // DOM aktualisieren
       count++
-      btn.textContent = `${count}`
+      countSpan.textContent = count
       btn.classList.add('vote')
     }
 
