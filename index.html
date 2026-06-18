@@ -261,35 +261,51 @@
     // -----------------------------
     async function toggleVote(personId) {
       const user = (await supabase.auth.getUser()).data.user
-
+    
+      // Button im DOM finden
+      const btn = document.querySelector(`.vote-btn[data-id="${personId}"]`)
+      let count = parseInt(btn.textContent.replace('⭐', '').trim())
+    
+      // Prüfen ob Vote existiert
       const { data: existingVote } = await supabase
         .from('vote')
         .select('*')
         .eq('person_id', personId)
         .eq('voter_id', user.id)
         .maybeSingle()
-
+    
       if (existingVote) {
+        // Vote löschen
         await supabase.from('vote').delete().eq('id', existingVote.id)
-        return loadPersons()
+    
+        // DOM aktualisieren
+        count--
+        btn.textContent = `⭐ ${count}`
+        btn.classList.remove('vote')
+        return
       }
-
+    
+      // Prüfen ob User schon 5 Votes hat
       const { data: myVotes } = await supabase
         .from('vote')
         .select('*')
         .eq('voter_id', user.id)
-
+    
       if (myVotes.length >= 5) {
         alert('Du hast bereits 5 Votes vergeben.')
         return
       }
-
+    
+      // Vote hinzufügen
       await supabase.from('vote').insert({
         person_id: personId,
         voter_id: user.id
       })
-
-      loadPersons()
+    
+      // DOM aktualisieren
+      count++
+      btn.textContent = `⭐ ${count}`
+      btn.classList.add('vote')
     }
 
     // -----------------------------
