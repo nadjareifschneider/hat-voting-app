@@ -264,7 +264,7 @@
     
       // Button im DOM finden
       const btn = document.querySelector(`.vote-btn[data-id="${personId}"]`)
-      let count = parseInt(btn.textContent.replace('⭐', '').trim())
+      let count = parseInt(btn.textContent.replace('&#127775;', '').trim())
     
       // Prüfen ob Vote existiert
       const { data: existingVote } = await supabase
@@ -280,7 +280,7 @@
     
         // DOM aktualisieren
         count--
-        btn.textContent = `⭐ ${count}`
+        btn.textContent = `&#127775; ${count}`
         btn.classList.remove('vote')
         return
       }
@@ -304,7 +304,7 @@
     
       // DOM aktualisieren
       count++
-      btn.textContent = `⭐ ${count}`
+      btn.textContent = `&#127775; ${count}`
       btn.classList.add('vote')
     }
 
