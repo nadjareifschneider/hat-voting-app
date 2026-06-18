@@ -362,7 +362,7 @@
     
       // 1) Bild verkleinern
       try {
-        file = await resizeImage(file, 1024, 0.8)
+        file = await resizeImage(file, 600, 0.7)
         console.log("📉 Bild verkleinert:", file.size, "Bytes")
       } catch (err) {
         console.error("❌ Fehler beim Verkleinern:", err)
