@@ -115,7 +115,7 @@
       font-size: 16px;
     }
 
-    .top-person {
+    .yellow-card {
       border: 2px solid gold;
       box-shadow: 0 0 12px rgba(255, 215, 0, 0.7);
       background: #fffbe6;
@@ -208,8 +208,8 @@
         const div = document.createElement('div')
         div.className = 'person'
         
-        if (voteCount === maxVotes && voteCount > 0) {
-          div.classList.add('top-person')
+        if(hasVoted) {
+          div.classList.add('yellow-card')
         }
         
         div.innerHTML = `
@@ -265,13 +265,12 @@
     async function toggleVote(personId) {
       const user = (await supabase.auth.getUser()).data.user
     
-      // Vote Count im DOM finden
+      // Button & Count finden
       const btn = document.querySelector(`.vote-btn[data-id="${personId}"]`)
       const countSpan = btn.querySelector('.vote-count')
+      const personDiv = btn.closest('.person')   // <--- HIER
       let count = parseInt(countSpan.textContent.trim())
-
-      console.log(count)
-      
+    
       // Prüfen ob Vote existiert
       const { data: existingVote } = await supabase
         .from('vote')
@@ -288,6 +287,7 @@
         count--
         countSpan.textContent = count
         btn.classList.remove('vote')
+        personDiv.classList.remove('yellow-card')   // <--- HIER
         return
       }
     
@@ -312,6 +312,7 @@
       count++
       countSpan.textContent = count
       btn.classList.add('vote')
+      personDiv.classList.add('yellow-card')       // <--- HIER
     }
 
     // -----------------------------
