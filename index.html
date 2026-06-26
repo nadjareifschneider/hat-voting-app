@@ -226,27 +226,7 @@
           div.classList.add('yellow-card')
         }
         
-        div.innerHTML = `
-          <div class="person-header">
-            <div class="person-name">&#x2728; ${person.name} &#x2728;</div>
-            <button 
-              data-id="${person.id}" 
-              class="vote-btn ${hasVoted ? 'vote' : ''} vote-badge">
-              &#127775; 
-              <span class="vote-count">${voteCount}</span>
-            </button>
-          </div>
-        
-          <div class="person-body">
-            <img 
-              src="${person.image_url ? person.image_url + '?t=' + Date.now() : ''}" 
-              data-img-id="${person.id}"
-            >
-          </div>
-        
-          <input type="file" data-id="${person.id}" class="upload-input" accept="image/*">
-          <button data-id="${person.id}" class="upload-btn">Foto hochladen</button>
-        `
+        div.innerHTML = renderPersonHTML(person, hasVoted, voteCount)
         
         list.appendChild(div)
       })
@@ -364,28 +344,13 @@
     function addPersonToDom(person) {
       const list = document.getElementById('person-list')
     
-      // Neues Person-DIV bauen
       const div = document.createElement('div')
       div.className = 'person'
       div.dataset.id = person.id
     
-      div.innerHTML = `
-        <div class="person-header">
-          <div class="person-name">&#x2728; ${person.name} &#x2728;</div>
-          <button data-id="${person.id}" class="vote-btn vote-badge">
-            &#127775; <span class="vote-count">0</span>
-          </button>
-        </div>
+      div.innerHTML = renderPersonHTML(person, false, 0)
     
-        <div class="person-body">
-          <img src="" data-img-id="${person.id}">
-        </div>
-    
-        <input type="file" data-id="${person.id}" class="upload-input" accept="image/*">
-        <button data-id="${person.id}" class="upload-btn">Foto hochladen</button>
-      `
-    
-      // An der richtigen Stelle einfügen (alphabetisch)
+      // Alphabetisch einfügen
       const persons = [...list.querySelectorAll('.person')]
       const insertBefore = persons.find(p => {
         const name = p.querySelector('.person-name').textContent.replace(/✨/g, '').trim()
@@ -393,11 +358,9 @@
       })
     
       list.insertBefore(div, insertBefore || null)
-    
-      // Event-Listener setzen
+      
       div.querySelector('.vote-btn').addEventListener('click', () => toggleVote(person.id))
     
-      // Smooth scroll
       div.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }
 
@@ -509,6 +472,31 @@
         img.src = URL.createObjectURL(file)
       })
     }
+
+    function renderPersonHTML(person, hasVoted, voteCount) {
+      return `
+        <div class="person-header">
+          <div class="person-name">&#x2728; ${person.name} &#x2728;</div>
+          <button 
+            data-id="${person.id}" 
+            class="vote-btn ${hasVoted ? 'vote' : ''} vote-badge">
+            &#127775; 
+            <span class="vote-count">${voteCount}</span>
+          </button>
+        </div>
+    
+        <div class="person-body">
+          <img 
+            src="${person.image_url ? person.image_url + '?t=' + Date.now() : ''}" 
+            data-img-id="${person.id}"
+          >
+        </div>
+    
+        <input type="file" data-id="${person.id}" class="upload-input" accept="image/*">
+        <button data-id="${person.id}" class="upload-btn">Foto hochladen</button>
+      `
+    }
+
 
     loadHeaderImage()
     loadPersons()
