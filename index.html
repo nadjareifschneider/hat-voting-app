@@ -113,6 +113,11 @@
       height: 40px;
     }
 
+    #search-box {
+      display: flex;
+      margin-bottom: 20px;
+    }
+    
     input[type="text"] {
       flex: 1;
       padding: 8px;
@@ -124,10 +129,6 @@
       border: 2px solid gold;
       box-shadow: 0 0 12px rgba(255, 215, 0, 0.7);
       background: #fffbe6;
-    }
-
-    #search {
-      width: 100%;
     }
     
     /* Mobile */
@@ -151,14 +152,16 @@
     <img id="header-image" src="" alt="Header" />
   </div>
     
-  <div>Du hast <b>5 Stimmen</b>, beweise Köpfchen und verteile sie weise.</div>
+  <div>Liebe:r Oberhauptbedeckungsenthusiast:in, du hast <b>5 Stimmen</b>, beweise Köpfchen und verteile sie weise.</div>
   
   <div id="new-person">
-    <input id="person-name" type="text" placeholder="Oberhauptbedeckungsenthusiast:in hinzufügen" />
+    <input id="person-name" type="text" placeholder="Person hinzufügen" />
     <button id="add-btn" class="upload-btn">Hinzufügen</button>
   </div>
 
-  <input id="search" type="text" placeholder="Oberhauptbedeckungsenthusiast:in suchen" />
+  <div id="search-box">
+    <input id="search" type="text" placeholder="Person suchen" />
+  </div>
 
   <div id="person-list"></div>
 
