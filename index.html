@@ -130,6 +130,10 @@
       box-shadow: 0 0 12px rgba(255, 215, 0, 0.7);
       background: #fffbe6;
     }
+
+    .upload-input {
+      display: none;
+    }
     
     /* Mobile */
     @media (max-width: 600px) {
@@ -343,6 +347,26 @@
       addPersonToDom(inserted)
     })
 
+    document.getElementById('person-list').addEventListener('click', (e) => {
+      const btn = e.target.closest('.upload-btn')
+      if (!btn) return
+    
+      const id = btn.dataset.id
+      const fileInput = document.querySelector(`.upload-input[data-id="${id}"]`)
+      fileInput.click()
+    })
+
+    document.getElementById('person-list').addEventListener('change', async (e) => {
+      if (!e.target.classList.contains('upload-input')) return
+    
+      const id = e.target.dataset.id
+      const file = e.target.files[0]
+      if (!file) return
+    
+      await uploadImage(id, file)
+    })
+
+    /*
     document.getElementById('person-list').addEventListener('click', async (e) => {
       if (!e.target.classList.contains('upload-btn')) return
     
@@ -356,7 +380,7 @@
       }
     
       await uploadImage(id, file)
-    })
+    })*/
 
     function addPersonToDom(person) {
       const list = document.getElementById('person-list')
