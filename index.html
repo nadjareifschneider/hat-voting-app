@@ -241,6 +241,17 @@
     // Vote toggeln
     // -----------------------------
     async function toggleVote(personId) {
+      // Spezialfall: Anna und Nadja
+      const personName = document.querySelector(`.person[data-id="${personId}"] .person-name`)
+        ?.textContent
+        ?.replace(/✨/g, '')
+        ?.trim()
+      
+      if (personName === "Anna und Nadja") {
+        alert("Nadja und Anna wollen den HAUPTgewinn gar nicht haben. Sie wissen schon, dass sie die Sieger der Herzen sind ❤️")
+        return
+      }
+
       const user = (await supabase.auth.getUser()).data.user
     
       // Button & Count finden
