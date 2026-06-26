@@ -334,24 +334,37 @@
     document.getElementById('add-btn').addEventListener('click', async () => {
       const nameInput = document.getElementById('person-name')
       const name = nameInput.value.trim()
-
+    
       if (!name) return
-
+    
       const { data: existing } = await supabase
         .from('person')
         .select('id')
         .eq('name', name)
         .maybeSingle()
-
+    
       if (existing) {
         alert('Der Name existiert schon.')
         return
       }
-
-      await supabase.from('person').insert({ name })
-
+    
+      // Neue Person einfügen + ID zurückbekommen
+      const { data: inserted } = await supabase
+        .from('person')
+        .insert({ name })
+        .select()
+        .single()
+    
       nameInput.value = ''
-      loadPersons()
+    
+      // Personen neu laden
+      await loadPersons()
+    
+      // Zu neuer Person scrollen
+      const newEl = document.querySelector(`.person[data-id="${inserted.id}"]`)
+      if (newEl) {
+        newEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }
     })
 
     // -----------------------------
