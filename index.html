@@ -493,7 +493,9 @@
         </div>
     
         <input type="file" data-id="${person.id}" class="upload-input" accept="image/*">
-        <button data-id="${person.id}" class="upload-btn">Foto hochladen</button>
+        <button data-id="${person.id}" class="upload-btn">
+          ${person.image_url ? 'Foto überschreiben' : 'Foto hochladen'}
+        </button>
       `
     }
 
