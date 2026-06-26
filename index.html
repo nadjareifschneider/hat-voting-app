@@ -255,22 +255,6 @@
       document.querySelectorAll('.vote-btn').forEach(btn => {
         btn.addEventListener('click', () => toggleVote(btn.dataset.id))
       })
-
-      // Upload Buttons
-      document.querySelectorAll('.upload-btn').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          const id = btn.dataset.id
-          const fileInput = document.querySelector(`.upload-input[data-id="${id}"]`)
-          const file = fileInput.files[0]
-
-          if (!file) {
-            alert('Bitte ein Bild auswählen.')
-            return
-          }
-
-          await uploadImage(id, file)
-        })
-      })
     }
 
     // -----------------------------
@@ -362,6 +346,21 @@
       addPersonToDom(inserted)
     })
 
+    document.getElementById('person-list').addEventListener('click', async (e) => {
+      if (!e.target.classList.contains('upload-btn')) return
+    
+      const id = e.target.dataset.id
+      const fileInput = document.querySelector(`.upload-input[data-id="${id}"]`)
+      const file = fileInput.files[0]
+    
+      if (!file) {
+        alert('Bitte ein Bild auswählen.')
+        return
+      }
+    
+      await uploadImage(id, file)
+    })
+
     function addPersonToDom(person) {
       const list = document.getElementById('person-list')
     
@@ -397,12 +396,6 @@
     
       // Event-Listener setzen
       div.querySelector('.vote-btn').addEventListener('click', () => toggleVote(person.id))
-      div.querySelector('.upload-btn').addEventListener('click', async () => {
-        const fileInput = div.querySelector('.upload-input')
-        const file = fileInput.files[0]
-        if (!file) return alert('Bitte ein Bild auswählen.')
-        await uploadImage(person.id, file)
-      })
     
       // Smooth scroll
       div.scrollIntoView({ behavior: 'smooth', block: 'center' })
