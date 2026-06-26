@@ -358,15 +358,55 @@
     
       nameInput.value = ''
     
-      // Personen neu laden
-      await loadPersons()
-    
-      // Zu neuer Person scrollen
-      const newEl = document.querySelector(`.person[data-id="${inserted.id}"]`)
-      if (newEl) {
-        newEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
-      }
+      // Neue Person ins DOM einfügen
+      addPersonToDom(inserted)
     })
+
+    function addPersonToDom(person) {
+      const list = document.getElementById('person-list')
+    
+      // Neues Person-DIV bauen
+      const div = document.createElement('div')
+      div.className = 'person'
+      div.dataset.id = person.id
+    
+      div.innerHTML = `
+        <div class="person-header">
+          <div class="person-name">&#x2728; ${person.name} &#x2728;</div>
+          <button data-id="${person.id}" class="vote-btn vote-badge">
+            &#127775; <span class="vote-count">0</span>
+          </button>
+        </div>
+    
+        <div class="person-body">
+          <img src="" data-img-id="${person.id}">
+        </div>
+    
+        <input type="file" data-id="${person.id}" class="upload-input" accept="image/*">
+        <button data-id="${person.id}" class="upload-btn">Foto hochladen</button>
+      `
+    
+      // An der richtigen Stelle einfügen (alphabetisch)
+      const persons = [...list.querySelectorAll('.person')]
+      const insertBefore = persons.find(p => {
+        const name = p.querySelector('.person-name').textContent.replace(/✨/g, '').trim()
+        return name.localeCompare(person.name) > 0
+      })
+    
+      list.insertBefore(div, insertBefore || null)
+    
+      // Event-Listener setzen
+      div.querySelector('.vote-btn').addEventListener('click', () => toggleVote(person.id))
+      div.querySelector('.upload-btn').addEventListener('click', async () => {
+        const fileInput = div.querySelector('.upload-input')
+        const file = fileInput.files[0]
+        if (!file) return alert('Bitte ein Bild auswählen.')
+        await uploadImage(person.id, file)
+      })
+    
+      // Smooth scroll
+      div.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
 
     // -----------------------------
     // Bild hochladen
